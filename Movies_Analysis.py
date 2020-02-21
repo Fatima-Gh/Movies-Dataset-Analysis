@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[295]:
+# In[2]:
 
 
 #import libraries
@@ -19,46 +19,46 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # 
 # Below are the questions I intend to explore:
 # 1. What are the most frequent movie genres? 
-# 2. What are the most casted actors?
-# 3. What is the distrbution of profits for the top 10 most popular movies?
+# 2. Who are the most casted actors?
+# 3. What is the distribution of profits for the top 10 most popular movies?
 
 # ## Data Exploration
 # First, I will start by invistigating the data to plan data cleaning and wrangling steps.
 
-# In[296]:
+# In[3]:
 
 
 #loading the data into a dataframe
 movies = pd.read_csv('tmdb-movies.csv')
 
 
-# In[297]:
+# In[4]:
 
 
 #Printing the first 5 rows of the dataset
 movies.head()
 
 
-# In[298]:
+# In[5]:
 
 
 movies.shape
 
 
-# In[299]:
+# In[6]:
 
 
 #Get stat of missing data
 movies.isnull().sum()
 
 
-# In[300]:
+# In[7]:
 
 
 movies.isnull().sum().sum()
 
 
-# In[301]:
+# In[8]:
 
 
 #stats on the number of duplicates
@@ -74,7 +74,7 @@ sum(movies.duplicated())
 # 4. Convert columns to appropriate data formats.
 # 5. Drop duplicates.
 
-# In[302]:
+# In[9]:
 
 
 #Dropping unused columns
@@ -85,32 +85,32 @@ col_to_be_deleted = ['id', 'imdb_id','homepage','director','production_companies
 movies.drop(col_to_be_deleted, axis=1, inplace=True)
 
 
-# In[303]:
+# In[10]:
 
 
 movies.head()
 
 
-# In[304]:
+# In[11]:
 
 
 movies.info()
 
 
-# In[305]:
+# In[12]:
 
 
 movies.shape
 
 
-# In[306]:
+# In[13]:
 
 
 #Dealing with missing or unknown values
 movies.isnull().sum().sum()
 
 
-# In[307]:
+# In[14]:
 
 
 # Converting 0 to NaN for budget and revenue
@@ -121,19 +121,19 @@ movies[columns] = movies[columns].replace(0, np.NaN)
 movies.dropna(inplace = True)
 
 
-# In[308]:
+# In[15]:
 
 
 movies.shape
 
 
-# In[309]:
+# In[16]:
 
 
 movies.isnull().sum().sum()
 
 
-# In[310]:
+# In[17]:
 
 
 #After dropping NaNs, we have less than half the number of rows left
@@ -141,19 +141,19 @@ movies.isnull().sum().sum()
 movies.drop_duplicates(keep = 'first', inplace = True)
 
 
-# In[311]:
+# In[18]:
 
 
 movies.shape
 
 
-# In[312]:
+# In[19]:
 
 
 movies.info()
 
 
-# In[313]:
+# In[20]:
 
 
 #Converting columns to appropriate data formats
@@ -170,9 +170,9 @@ movies.dtypes
 
 # ## Answering Business Questions
 
-# Question 1: What are the top genres based on movie popularity?
+# ### Question 1: What are the top genres based on movie popularity?
 
-# In[314]:
+# In[21]:
 
 
 #Creating a list of gernres  
@@ -188,13 +188,13 @@ genres = set(genres)
 len(genres)
 
 
-# In[315]:
+# In[22]:
 
 
 genres
 
 
-# In[316]:
+# In[23]:
 
 
 def split_genres(val):
@@ -207,33 +207,33 @@ def split_genres(val):
         return 0
 
 
-# In[317]:
+# In[24]:
 
 
 for g in genres:
     movies[g] = movies['genres'].apply(split_genres)
 
 
-# In[318]:
+# In[25]:
 
 
 movies.head()
 
 
-# In[319]:
+# In[26]:
 
 
 rows = movies.iloc[:, 9:29]
 top_genres = rows.apply(pd.value_counts)
 
 
-# In[320]:
+# In[27]:
 
 
 top_genres
 
 
-# In[321]:
+# In[28]:
 
 
 # Initialize the plot
@@ -249,15 +249,15 @@ plt.show()
 
 # From the analysis above, we can conclude that the most frequent movie genres are Darama, Comedy, Thriller, Action and Adventure.
 
-# Question 2: What are the most casted actors?
+# ### Question 2: Who are the most casted actors?
 
-# In[322]:
+# In[29]:
 
 
 movies.cast[0].split('|')
 
 
-# In[323]:
+# In[30]:
 
 
 cast = []
@@ -269,20 +269,20 @@ for val in movies['cast']:
         
 
 
-# In[324]:
+# In[31]:
 
 
 cast = set(cast)
 len(cast)
 
 
-# In[325]:
+# In[32]:
 
 
 all_cast = pd.Series(movies['cast'].str.cat(sep = '|').split('|')).value_counts(ascending = False)
 
 
-# In[326]:
+# In[33]:
 
 
 # Initialize the plot
@@ -298,28 +298,28 @@ plt.show()
 
 # From the analysis above, we can see that the 5 top most casted actors are:Robert De Niro, Bruce Willis, Samuel L. Jackson, Nicolas Cage, and Matt Damon. 
 
-# Question 3: What is the distrbution of profits for the top 10 most popular movies?
+# ### Question 3: What is the distribution of profits for the top 10 most popular movies?
 
 # Exploring the most popular movies:
 
-# In[331]:
+# In[34]:
 
 
 movies.sort_values(ascending=False, by=['popularity'])[:10].plot(kind='bar',x='original_title',y='popularity', figsize=(12,6), color='#7d97ad')
 
 
-# In[332]:
+# In[42]:
 
 
-top_movies_revenue[['original_title','revenue', 'budget']].describe()
+top_movies_revenue = movies[['original_title','revenue', 'budget', 'popularity']].sort_values(ascending=False, by=['popularity'])[:10]
+
+top_movies_revenue[['original_title','revenue', 'budget']].head()
 
 
-# In[333]:
+# In[40]:
 
 
-top_movies_revenue = movies.sort_values(ascending=False, by=['popularity'])[:10]
-
-top_movies_revenue[['original_title','revenue', 'budget']].plot(x='original_title',
+top_movies_revenue[['original_title','revenue', 'budget']].sort_values(ascending=False, by=['revenue']).plot(x='original_title',
                                                       kind='bar', 
                                                       color=["#8ad4d4","#7d97ad"],
                                                       rot=45, figsize=(16,8))
